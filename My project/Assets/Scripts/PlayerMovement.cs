@@ -38,22 +38,22 @@ public class PlayerMovement : MonoBehaviour
     }
 
     void HandleXMovement(){
-       // if(Mathf.Abs(xInput) > 0) {
+       if(Mathf.Abs(xInput) > 0) {
             // float increment = xInput * acceleration;
             // float newSpeed = Mathf.Clamp(body.velocity.x + increment, -maxGroundSpeed, maxGroundSpeed);
             // body.velocity = new Vector2(newSpeed, body.velocity.y);
-          //  float direction = Mathf.Sign(xInput);
-          //  transform.localScale = new Vector3(direction,1,1);
+          float direction = Mathf.Sign(xInput);
+          transform.localScale = new Vector3(direction,1,1);
 
-       // }
+       }
 
        body.velocity = new Vector2(xInput * maxGroundSpeed, body.velocity.y);
 
     }
 
     void HandleJump() {
-        if(Mathf.Abs(yInput) > 0 && grounded) {
-            body.velocity = new Vector2(body.velocity.x, yInput * jumpSpeed);
+        if(yInput > 0 && grounded) {
+            body.velocity = new Vector2(body.velocity.x,  jumpSpeed);
         }
     }
 
