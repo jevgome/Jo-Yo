@@ -29,7 +29,7 @@ public class PlayerMovement : MonoBehaviour
     void FixedUpdate() {
         CheckGround();
         HandleXMovement();
-        ApplyFriction();
+        // ApplyFriction();
     }
 
     void CheckInput() {
@@ -38,16 +38,16 @@ public class PlayerMovement : MonoBehaviour
     }
 
     void HandleXMovement(){
-        if(Mathf.Abs(xInput) > 0) {
+       // if(Mathf.Abs(xInput) > 0) {
             // float increment = xInput * acceleration;
             // float newSpeed = Mathf.Clamp(body.velocity.x + increment, -maxGroundSpeed, maxGroundSpeed);
             // body.velocity = new Vector2(newSpeed, body.velocity.y);
-            float direction = Mathf.Sign(xInput);
-            transform.localScale = new Vector3(direction,1,1);
+          //  float direction = Mathf.Sign(xInput);
+          //  transform.localScale = new Vector3(direction,1,1);
 
-        }
+       // }
 
-        body.velocity = new Vector2(xInput * maxGroundSpeed, body.velocity.y);
+       body.velocity = new Vector2(xInput * maxGroundSpeed, body.velocity.y);
 
     }
 
@@ -67,4 +67,5 @@ public class PlayerMovement : MonoBehaviour
             body.velocity = new Vector2(body.velocity.x * groundDecay, body.velocity.y);
         }
     }
+
 }
