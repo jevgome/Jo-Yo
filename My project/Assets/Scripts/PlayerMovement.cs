@@ -12,7 +12,10 @@ public class PlayerMovement : MonoBehaviour
     [Range(0f,1f)]
     public float groundDecay;
     public float maxGroundSpeed;
+    public float maxFallSpeed;
     public float jumpSpeed;
+    public float fallAcceleration;
+    public float swingAcceleration;
 
     public bool grounded;
 
@@ -30,6 +33,7 @@ public class PlayerMovement : MonoBehaviour
         CheckGround();
         HandleXMovement();
         // ApplyFriction();
+        HandleSwing();
     }
 
     void CheckInput() {
@@ -55,6 +59,13 @@ public class PlayerMovement : MonoBehaviour
         if(yInput > 0 && grounded) {
             body.velocity = new Vector2(body.velocity.x,  jumpSpeed);
         }
+        if(yInput < 0 && !grounded)
+        {
+
+            float increment = yInput * fallAcceleration;
+            float newSpeed = Mathf.Clamp(body.velocity.y + increment, maxFallSpeed, 0);
+            body.velocity = new Vector2(body.velocity.x, - newSpeed);
+        }
     }
 
     void CheckGround() {
@@ -65,6 +76,19 @@ public class PlayerMovement : MonoBehaviour
         if(grounded && xInput == 0 && yInput == 0) {
             // body.velocity *= groundDecay;
             body.velocity = new Vector2(body.velocity.x * groundDecay, body.velocity.y);
+        }
+    }
+
+    void HandleSwing()
+    {
+        Vector3 mouseposition = Input.mousePosition;
+        mouseposition.z = Camera.main.nearClipPlane;
+        mouseposition = Camera.main.ScreenToWorldPoint(mouseposition);
+
+        if (Input.GetMouseButton(0))
+        {
+
+            transform.position = Vector2.MoveTowards(transform.position, mouseposition, swingAcceleration);
         }
     }
 
