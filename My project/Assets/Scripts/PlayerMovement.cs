@@ -5,9 +5,10 @@ using UnityEngine;
 public class PlayerMovement : MonoBehaviour
 {
     public Rigidbody2D body;
-    public BoxCollider2D groundCheck;
+    BoxCollider2D groundCheck;
     public LayerMask groundMask;
-
+    public GameObject grappler;
+    public CircleCollider2D circleCollider;
     public float acceleration;
     [Range(0f,1f)]
     public float groundDecay;
@@ -23,6 +24,9 @@ public class PlayerMovement : MonoBehaviour
     float yInput;
 
     // Update is called once per frame
+    void Start() {
+        groundCheck = GetComponent<BoxCollider2D>();
+    }
     void Update()
     {
         CheckInput();
@@ -32,7 +36,7 @@ public class PlayerMovement : MonoBehaviour
     void FixedUpdate() {
         CheckGround();
         HandleXMovement();
-        // ApplyFriction();
+        ApplyFriction();
         HandleSwing();
     }
 
@@ -43,15 +47,12 @@ public class PlayerMovement : MonoBehaviour
 
     void HandleXMovement(){
        if(Mathf.Abs(xInput) > 0) {
-            // float increment = xInput * acceleration;
-            // float newSpeed = Mathf.Clamp(body.velocity.x + increment, -maxGroundSpeed, maxGroundSpeed);
-            // body.velocity = new Vector2(newSpeed, body.velocity.y);
           float direction = Mathf.Sign(xInput);
-          transform.localScale = new Vector3(direction,1,1);
-
+          transform.localScale = new Vector3(direction * Mathf.Abs(transform.localScale.x),transform.localScale.y,transform.localScale.z);
        }
-
-       body.velocity = new Vector2(xInput * maxGroundSpeed, body.velocity.y);
+        if(!Input.GetMouseButton(1)) {
+            body.AddForce(new Vector2(xInput*maxGroundSpeed,body.velocity.y));
+        }
 
     }
 
@@ -64,7 +65,7 @@ public class PlayerMovement : MonoBehaviour
 
             float increment = yInput * fallAcceleration;
             float newSpeed = Mathf.Clamp(body.velocity.y + increment, maxFallSpeed, 0);
-            body.velocity = new Vector2(body.velocity.x, - newSpeed);
+            body.AddForce(transform.up*-newSpeed);
         }
     }
 
@@ -74,7 +75,7 @@ public class PlayerMovement : MonoBehaviour
 
     void ApplyFriction() {
         if(grounded && xInput == 0 && yInput == 0) {
-            // body.velocity *= groundDecay;
+            body.velocity *= groundDecay;
             body.velocity = new Vector2(body.velocity.x * groundDecay, body.velocity.y);
         }
     }
@@ -84,12 +85,16 @@ public class PlayerMovement : MonoBehaviour
         Vector3 mouseposition = Input.mousePosition;
         mouseposition.z = Camera.main.nearClipPlane;
         mouseposition = Camera.main.ScreenToWorldPoint(mouseposition);
-
-        if (Input.GetMouseButton(0))
+        Vector2 direction = new Vector2(0,0);
+        Vector2 newvector = new Vector2(0,0);
+        if (Input.GetMouseButton(1) && Physics2D.OverlapAreaAll(circleCollider.bounds.min, circleCollider.bounds.max, groundMask).Length > 0)
         {
+            direction = grappler.transform.position - transform.position;
+            newvector = direction.normalized * swingAcceleration * Time.fixedDeltaTime;
+            
 
-            transform.position = Vector2.MoveTowards(transform.position, mouseposition, swingAcceleration);
         }
+        body.AddForce(newvector);
     }
 
 }

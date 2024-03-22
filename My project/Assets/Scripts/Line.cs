@@ -5,10 +5,11 @@ using UnityEngine;
 public class Line : MonoBehaviour
 {
 
-    public LineRenderer line;
+    LineRenderer line;
     public GameObject player;
+    public GameObject yoyo;
 
-    Color lineColor = new Color(0, 0, 0, 1);
+    Color lineColor = new Color(255, 255, 255, 1);
     // Start is called before the first frame update
     void Start()
     {
@@ -19,15 +20,12 @@ public class Line : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        Vector3 mouseposition = Input.mousePosition;
-        mouseposition.z = Camera.main.nearClipPlane;
-        mouseposition = Camera.main.ScreenToWorldPoint(mouseposition);
 
-        if (Input.GetMouseButton(0))
+        if (Input.GetMouseButton(1))
         {
             line.enabled = true;
             line.SetPosition(0, player.transform.position);
-            line.SetPosition(1,mouseposition);
+            line.SetPosition(1,yoyo.transform.position);
         } else
         {
             line.enabled = false; 
