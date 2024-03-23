@@ -17,20 +17,29 @@ public class PlayerMovement : MonoBehaviour
     public float jumpSpeed;
     public float fallAcceleration;
     public float swingAcceleration;
+    public float maxSwingSpeed;
+    public float airSpeed;
+    public Sprite[] spriteArray;
+    SpriteRenderer spriteRenderer;
 
     public bool grounded;
+    public bool moved;
 
     float xInput;
     float yInput;
 
+
+
     // Update is called once per frame
     void Start() {
         groundCheck = GetComponent<BoxCollider2D>();
+        spriteRenderer = GetComponent<SpriteRenderer>();
     }
     void Update()
     {
         CheckInput();
         HandleJump();
+        HandleSprite();
     }
 
     void FixedUpdate() {
@@ -38,22 +47,36 @@ public class PlayerMovement : MonoBehaviour
         HandleXMovement();
         ApplyFriction();
         HandleSwing();
+        
     }
 
     void CheckInput() {
-        xInput = Input.GetAxis("Horizontal");
+        if(Input.GetKey(KeyCode.A) && Input.GetKey(KeyCode.D))
+        {
+            xInput = 0;
+        } else
+        {
+            xInput = Input.GetAxis("Horizontal");
+        }
+        
         yInput = Input.GetAxis("Vertical");
     }
 
     void HandleXMovement(){
-       if(Mathf.Abs(xInput) > 0) {
-          float direction = Mathf.Sign(xInput);
-          transform.localScale = new Vector3(direction * Mathf.Abs(transform.localScale.x),transform.localScale.y,transform.localScale.z);
-       }
-        if(!Input.GetMouseButton(1)) {
-            body.AddForce(new Vector2(xInput*maxGroundSpeed,body.velocity.y));
+        if(grounded) {
+            moved = true;
+        } 
+        if(Input.GetMouseButton(0))
+        {
+            moved = false;
         }
-
+        if(moved)
+        {
+            body.velocity = new Vector2(xInput * maxGroundSpeed, body.velocity.y);
+        } else
+        {
+            body.AddForce(transform.right * xInput * airSpeed);
+        }
     }
 
     void HandleJump() {
@@ -62,10 +85,7 @@ public class PlayerMovement : MonoBehaviour
         }
         if(yInput < 0 && !grounded)
         {
-
-            float increment = yInput * fallAcceleration;
-            float newSpeed = Mathf.Clamp(body.velocity.y + increment, maxFallSpeed, 0);
-            body.AddForce(transform.up*-newSpeed);
+            body.AddForce(transform.up*yInput * fallAcceleration);
         }
     }
 
@@ -74,7 +94,7 @@ public class PlayerMovement : MonoBehaviour
     }
 
     void ApplyFriction() {
-        if(grounded && xInput == 0 && yInput == 0) {
+        if(grounded && xInput == 0 && yInput == 0 && !Input.GetMouseButton(0)) {
             body.velocity *= groundDecay;
             body.velocity = new Vector2(body.velocity.x * groundDecay, body.velocity.y);
         }
@@ -82,19 +102,50 @@ public class PlayerMovement : MonoBehaviour
 
     void HandleSwing()
     {
-        Vector3 mouseposition = Input.mousePosition;
-        mouseposition.z = Camera.main.nearClipPlane;
-        mouseposition = Camera.main.ScreenToWorldPoint(mouseposition);
         Vector2 direction = new Vector2(0,0);
         Vector2 newvector = new Vector2(0,0);
-        if (Input.GetMouseButton(1) && Physics2D.OverlapAreaAll(circleCollider.bounds.min, circleCollider.bounds.max, groundMask).Length > 0)
+        if (Input.GetMouseButton(0) && Physics2D.OverlapAreaAll(circleCollider.bounds.min, circleCollider.bounds.max, groundMask).Length > 0)
         {
             direction = grappler.transform.position - transform.position;
-            newvector = direction.normalized * swingAcceleration * Time.fixedDeltaTime;
+            newvector = direction.normalized * swingAcceleration;
+            body.AddForce(newvector);
             
-
         }
-        body.AddForce(newvector);
+        body.velocity = Vector2.ClampMagnitude(body.velocity, maxSwingSpeed);
     }
 
+    void HandleSprite()
+    {
+        if (Input.GetMouseButton(0))
+        {
+            spriteRenderer.sprite = spriteArray[1];
+        } else if (grounded)
+        {
+            spriteRenderer.sprite = spriteArray[0];
+        } else if (body.velocity.y > 0)
+        {
+            spriteRenderer.sprite = spriteArray[2];
+        } else
+        {
+            spriteRenderer.sprite = spriteArray[3];
+        }
+        if(Input.GetMouseButton(0))
+        {
+            Vector3 diff = grappler.transform.position - transform.position;
+            diff.Normalize();
+            float rot_z = Mathf.Atan2(diff.y, diff.x) * Mathf.Rad2Deg;
+            transform.rotation = Quaternion.Euler(0f, 0f, rot_z - 90);
+                
+            float direction = Mathf.Sign(diff.x);
+            transform.localScale = new Vector3(direction * Mathf.Abs(transform.localScale.x), transform.localScale.y, transform.localScale.z);
+        } else
+        {
+            transform.rotation = Quaternion.Euler(0, 0f, 0f);
+            if (Mathf.Abs(xInput) > 0)
+            {
+                float direction = Mathf.Sign(xInput);
+                transform.localScale = new Vector3(direction * Mathf.Abs(transform.localScale.x), transform.localScale.y, transform.localScale.z);
+            }
+        }
+    }
 }

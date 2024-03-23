@@ -21,7 +21,7 @@ public class Line : MonoBehaviour
     void Update()
     {
 
-        if (Input.GetMouseButton(1))
+        if (Input.GetMouseButton(0))
         {
             line.enabled = true;
             line.SetPosition(0, player.transform.position);

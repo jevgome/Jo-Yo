@@ -29,7 +29,7 @@ public class YoyoGrapple : MonoBehaviour
         collided = Physics2D.OverlapAreaAll(collider.bounds.min, collider.bounds.max, groundMask).Length > 0;
         Vector2 direction = new Vector2(0,0);
         Vector2 newvector = new Vector2(0,0);
-        if(Input.GetMouseButton(1)) {
+        if(Input.GetMouseButton(0)) {
             spriteRenderer.enabled = true;
             if(!grappling) {
                 direction = mouseposition - transform.position;
