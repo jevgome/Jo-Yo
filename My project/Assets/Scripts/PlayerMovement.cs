@@ -4,53 +4,60 @@ using UnityEngine;
 
 public class PlayerMovement : MonoBehaviour
 {
-    public Rigidbody2D body;
-    BoxCollider2D groundCheck;
-    public LayerMask groundMask;
-    public GameObject grappler;
-    public CircleCollider2D circleCollider;
-    public float acceleration;
+    [SerializeField] private Rigidbody2D body;
+    [SerializeField] private BoxCollider2D groundCheck;
+    [SerializeField] private BoxCollider2D wallCheck;
+    [SerializeField] private LayerMask groundMask;
+    [SerializeField] private LayerMask wallMask;
+    [SerializeField] private GameObject grappler;
+    [SerializeField] private CircleCollider2D circleCollider;
+    [SerializeField] private float acceleration;
     [Range(0f,1f)]
-    public float groundDecay;
-    public float maxGroundSpeed;
-    public float maxFallSpeed;
-    public float jumpSpeed;
-    public float fallAcceleration;
-    public float swingAcceleration;
-    public float maxSwingSpeed;
-    public float airSpeed;
-    public Sprite[] spriteArray;
+    [SerializeField] private float groundDecay;
+    [SerializeField] private float maxGroundSpeed;
+    [SerializeField] private float maxFallSpeed;
+    [SerializeField] private float jumpSpeed;
+    [SerializeField] private float fallAcceleration;
+    [SerializeField] private float swingAcceleration;
+    [SerializeField] private float maxSwingSpeed;
+    [SerializeField] private float airSpeed;
+    [SerializeField] private Sprite[] spriteArray;
     SpriteRenderer spriteRenderer;
 
-    public bool grounded;
-    public bool moved;
+    [SerializeField] private bool grounded;
+    private bool moved;
 
-    float xInput;
-    float yInput;
+    private float xInput;
+    private float yInput;
+    [SerializeField] private DistanceJoint2D ropeJoint;
+    [SerializeField] private Rigidbody2D anchor;
 
-
+    [SerializeField] private float wallSlidingSpeed;
+    [SerializeField] private bool isWallSliding;
 
     // Update is called once per frame
-    void Start() {
-        groundCheck = GetComponent<BoxCollider2D>();
+    private void Start() {
         spriteRenderer = GetComponent<SpriteRenderer>();
+        ropeJoint.enabled = false;
     }
-    void Update()
+    private void Update()
     {
         CheckInput();
         HandleJump();
         HandleSprite();
     }
 
-    void FixedUpdate() {
+    private void FixedUpdate() {
         CheckGround();
         HandleXMovement();
         ApplyFriction();
-        HandleSwing();
+        Pull();
+        HandleWallSlide();
+        Swing();
         
     }
 
-    void CheckInput() {
+    private void CheckInput() {
         if(Input.GetKey(KeyCode.A) && Input.GetKey(KeyCode.D))
         {
             xInput = 0;
@@ -62,7 +69,7 @@ public class PlayerMovement : MonoBehaviour
         yInput = Input.GetAxis("Vertical");
     }
 
-    void HandleXMovement(){
+    private void HandleXMovement(){
         if(grounded) {
             moved = true;
         } 
@@ -79,7 +86,7 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
-    void HandleJump() {
+    private void HandleJump() {
         if(yInput > 0 && grounded) {
             body.velocity = new Vector2(body.velocity.x,  jumpSpeed);
         }
@@ -89,18 +96,18 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
-    void CheckGround() {
+    private void CheckGround() {
         grounded = Physics2D.OverlapAreaAll(groundCheck.bounds.min, groundCheck.bounds.max, groundMask).Length > 0;
     }
 
-    void ApplyFriction() {
+    private void ApplyFriction() {
         if(grounded && xInput == 0 && yInput == 0 && !Input.GetMouseButton(0)) {
             body.velocity *= groundDecay;
             body.velocity = new Vector2(body.velocity.x * groundDecay, body.velocity.y);
         }
     }
 
-    void HandleSwing()
+    private void Pull()
     {
         Vector2 direction = new Vector2(0,0);
         Vector2 newvector = new Vector2(0,0);
@@ -113,8 +120,30 @@ public class PlayerMovement : MonoBehaviour
         }
         body.velocity = Vector2.ClampMagnitude(body.velocity, maxSwingSpeed);
     }
+    
+    private void Swing() {
 
-    void HandleSprite()
+        if (Input.GetMouseButton(1) && Physics2D.OverlapAreaAll(circleCollider.bounds.min, circleCollider.bounds.max, groundMask).Length > 0)
+        {
+            anchor.transform.position = grappler.transform.position;
+            if(!ropeJoint.enabled)ropeJoint.distance = Vector2.Distance(transform.position, grappler.transform.position);
+            ropeJoint.enabled = true;
+           
+            
+        } else {
+            ropeJoint.enabled = false;
+        }
+    }
+
+    private void HandleWallSlide() {
+        if(Physics2D.OverlapAreaAll(wallCheck.bounds.min, wallCheck.bounds.max, wallMask).Length > 0 && !grounded && xInput != 0f) {
+            body.velocity = new Vector2(body.velocity.x, Mathf.Clamp(body.velocity.y, -wallSlidingSpeed, float.MaxValue));
+            isWallSliding = true;
+        } else {
+            isWallSliding = false;
+        }
+    }
+    private void HandleSprite()
     {
         if (Input.GetMouseButton(0))
         {
@@ -129,7 +158,7 @@ public class PlayerMovement : MonoBehaviour
         {
             spriteRenderer.sprite = spriteArray[3];
         }
-        if(Input.GetMouseButton(0))
+        if(Input.GetMouseButton(0) || Input.GetMouseButton(1))
         {
             Vector3 diff = grappler.transform.position - transform.position;
             diff.Normalize();

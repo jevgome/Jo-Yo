@@ -5,23 +5,23 @@ using UnityEngine;
 public class Line : MonoBehaviour
 {
 
-    LineRenderer line;
-    public GameObject player;
-    public GameObject yoyo;
+    private LineRenderer line;
+    [SerializeField] private GameObject player;
+    [SerializeField] private GameObject yoyo;
 
-    Color lineColor = new Color(255, 255, 255, 1);
+    private Color lineColor = new Color(255, 255, 255, 1);
     // Start is called before the first frame update
-    void Start()
+    private void Start()
     {
         line = GetComponent<LineRenderer>();
         line.SetColors(lineColor,lineColor);
     }
 
     // Update is called once per frame
-    void Update()
+    private void Update()
     {
 
-        if (Input.GetMouseButton(0))
+        if (Input.GetMouseButton(0) || Input.GetMouseButton(1))
         {
             line.enabled = true;
             line.SetPosition(0, player.transform.position);

@@ -5,9 +5,9 @@ using UnityEngine;
 public class setCursor : MonoBehaviour
 {
     // You must set the cursor in the inspector.
-    public Texture2D crosshair;
+    [SerializeField] private Texture2D crosshair;
 
-    void Start()
+    private void Start()
     {
 
         //set the cursor origin to its centre. (default is upper left corner)

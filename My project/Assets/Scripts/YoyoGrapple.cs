@@ -4,16 +4,16 @@ using UnityEngine;
 
 public class YoyoGrapple : MonoBehaviour
 {
-    public GameObject player;
-    public LayerMask groundMask;
-    SpriteRenderer spriteRenderer;
-    Rigidbody2D body;
-    CircleCollider2D collider;
-    public float speed;
-    bool grappling = false;
-    public bool collided;
+    [SerializeField] private GameObject player;
+    [SerializeField] private LayerMask groundMask;
+    private SpriteRenderer spriteRenderer;
+    private Rigidbody2D body;
+    private CircleCollider2D collider;
+    [SerializeField] private float speed;
+    private bool grappling = false;
+    [SerializeField] private bool collided;
 
-    void Start() {
+    private void Start() {
         spriteRenderer = GetComponent<SpriteRenderer>();
         collider = GetComponent<CircleCollider2D>();
         Physics.IgnoreLayerCollision(6,6);
@@ -21,7 +21,7 @@ public class YoyoGrapple : MonoBehaviour
         body = GetComponent<Rigidbody2D>();
     }
     // Update is called once per frame
-    void FixedUpdate()
+    private void FixedUpdate()
     {
         Vector3 mouseposition = Input.mousePosition;
         mouseposition.z = Camera.main.nearClipPlane;
@@ -29,7 +29,7 @@ public class YoyoGrapple : MonoBehaviour
         collided = Physics2D.OverlapAreaAll(collider.bounds.min, collider.bounds.max, groundMask).Length > 0;
         Vector2 direction = new Vector2(0,0);
         Vector2 newvector = new Vector2(0,0);
-        if(Input.GetMouseButton(0)) {
+        if(Input.GetMouseButton(0) || Input.GetMouseButton(1)) {
             spriteRenderer.enabled = true;
             if(!grappling) {
                 direction = mouseposition - transform.position;
