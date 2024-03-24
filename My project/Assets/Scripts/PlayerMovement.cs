@@ -22,7 +22,7 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private float maxSwingSpeed;
     [SerializeField] private float airSpeed;
     [SerializeField] private Sprite[] spriteArray;
-    SpriteRenderer spriteRenderer;
+    private SpriteRenderer spriteRenderer;
 
     [SerializeField] private bool grounded;
     private bool moved;
@@ -34,6 +34,8 @@ public class PlayerMovement : MonoBehaviour
 
     [SerializeField] private float wallSlidingSpeed;
     [SerializeField] private bool isWallSliding;
+
+    private bool hasWallJumped;
 
     // Update is called once per frame
     private void Start() {
@@ -72,23 +74,33 @@ public class PlayerMovement : MonoBehaviour
     private void HandleXMovement(){
         if(grounded) {
             moved = true;
-        } 
+            if(Input.GetKey(KeyCode.LeftShift)) {
+               body.velocity = new Vector2(xInput * maxGroundSpeed * 2f, body.velocity.y); 
+            } else {
+                body.velocity = new Vector2(xInput * maxGroundSpeed, body.velocity.y); 
+            }
+        } else if (moved && !isWallSliding){
+            body.velocity = new Vector2(xInput * maxGroundSpeed, body.velocity.y);
+        } else {
+            body.AddForce(transform.right * xInput * airSpeed);
+        }
         if(Input.GetMouseButton(0))
         {
             moved = false;
         }
-        if(moved)
-        {
-            body.velocity = new Vector2(xInput * maxGroundSpeed, body.velocity.y);
-        } else
-        {
-            body.AddForce(transform.right * xInput * airSpeed);
-        }
     }
 
     private void HandleJump() {
+        if(grounded) {
+            hasWallJumped = false;
+        }
         if(yInput > 0 && grounded) {
             body.velocity = new Vector2(body.velocity.x,  jumpSpeed);
+        }
+        if(yInput > 0 && isWallSliding && !hasWallJumped) {
+            body.velocity = new Vector2(400f * Mathf.Sign(transform.localScale.x),600f);
+            moved = false;
+            hasWallJumped = true;
         }
         if(yInput < 0 && !grounded)
         {
@@ -136,7 +148,7 @@ public class PlayerMovement : MonoBehaviour
     }
 
     private void HandleWallSlide() {
-        if(Physics2D.OverlapAreaAll(wallCheck.bounds.min, wallCheck.bounds.max, wallMask).Length > 0 && !grounded && xInput != 0f) {
+        if(Physics2D.OverlapAreaAll(wallCheck.bounds.min, wallCheck.bounds.max, groundMask).Length > 0 && !grounded && xInput != 0f) {
             body.velocity = new Vector2(body.velocity.x, Mathf.Clamp(body.velocity.y, -wallSlidingSpeed, float.MaxValue));
             isWallSliding = true;
         } else {
@@ -172,7 +184,13 @@ public class PlayerMovement : MonoBehaviour
             transform.rotation = Quaternion.Euler(0, 0f, 0f);
             if (Mathf.Abs(xInput) > 0)
             {
-                float direction = Mathf.Sign(xInput);
+                float direction;
+                if(isWallSliding) {
+                    direction = -Mathf.Sign(xInput);
+                } else {
+                    direction = Mathf.Sign(xInput);
+                }
+                
                 transform.localScale = new Vector3(direction * Mathf.Abs(transform.localScale.x), transform.localScale.y, transform.localScale.z);
             }
         }

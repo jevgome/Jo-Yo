@@ -455,7 +455,8 @@ MonoBehaviour:
   - {fileID: 21300000, guid: 4527784d7fc3c974abbe49a76422a88b, type: 3}
   grounded: 0
   ropeJoint: {fileID: 34396357}
-  wallSlidingSpeed: 3
+  anchor: {fileID: 2146087084}
+  wallSlidingSpeed: 1
   isWallSliding: 0
 --- !u!232 &34396357
 DistanceJoint2D:
@@ -1019,8 +1020,8 @@ Transform:
   m_GameObject: {fileID: 699140966}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -4.52, y: 0.62, z: -0.017750872}
-  m_LocalScale: {x: 3.49, y: 0.6, z: 1}
+  m_LocalPosition: {x: -0.18, y: 0.03, z: -0.017750872}
+  m_LocalScale: {x: 0.88, y: 0.6, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -1113,8 +1114,8 @@ GameObject:
   - component: {fileID: 993651471}
   - component: {fileID: 993651470}
   - component: {fileID: 993651469}
-  m_Layer: 8
-  m_Name: Ground (3)
+  m_Layer: 7
+  m_Name: Wall (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1243,8 +1244,8 @@ GameObject:
   - component: {fileID: 1453606223}
   - component: {fileID: 1453606222}
   - component: {fileID: 1453606221}
-  m_Layer: 8
-  m_Name: Ground (2)
+  m_Layer: 7
+  m_Name: Wall
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
