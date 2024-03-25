@@ -4,59 +4,75 @@ using UnityEngine;
 
 public class PlayerMovement : MonoBehaviour
 {
-    [SerializeField] private Rigidbody2D body;
+    // Imported Objects and Components
     [SerializeField] private BoxCollider2D groundCheck;
     [SerializeField] private BoxCollider2D wallCheck;
     [SerializeField] private LayerMask groundMask;
     [SerializeField] private LayerMask wallMask;
+    [SerializeField] private LayerMask enemyMask;
     [SerializeField] private GameObject grappler;
     [SerializeField] private CircleCollider2D circleCollider;
-    [SerializeField] private float acceleration;
-    [Range(0f,1f)]
-    [SerializeField] private float groundDecay;
-    [SerializeField] private float maxGroundSpeed;
-    [SerializeField] private float maxFallSpeed;
-    [SerializeField] private float jumpSpeed;
-    [SerializeField] private float fallAcceleration;
-    [SerializeField] private float swingAcceleration;
-    [SerializeField] private float maxSwingSpeed;
-    [SerializeField] private float airSpeed;
     [SerializeField] private Sprite[] spriteArray;
-    private SpriteRenderer spriteRenderer;
-
-    [SerializeField] private bool grounded;
-    private bool moved;
-
-    private float xInput;
-    private float yInput;
-    [SerializeField] private DistanceJoint2D ropeJoint;
     [SerializeField] private Rigidbody2D anchor;
 
-    [SerializeField] private float wallSlidingSpeed;
-    [SerializeField] private bool isWallSliding;
-
+    // Physics stuff
+    
+    [Range(0f,1f)] [SerializeField] private float groundDecay; // Friction coefficient
+    [SerializeField] private float maxGroundSpeed; // Speed on ground
+    [SerializeField] private float maxFallSpeed; // Max speed when falling faster
+    [SerializeField] private float jumpSpeed; // Height of jump
+    [SerializeField] private float fallAcceleration; // Force of faster falling
+    [SerializeField] private float swingAcceleration; // Pulling force of swing
+    [SerializeField] private float maxSwingSpeed; // Max pulling force
+    [SerializeField] private float airSpeed; // XMovement arial speed after swinging
+    [SerializeField] private float wallSlidingSpeed; // Gravity when wall-sliding
+    [SerializeField] private float sprintingSpeed; // Speed when sprinting
+    [SerializeField] private float minRopeDistance; // Distance when rope becomes rigid
+    
+    // Internal vars
+    private bool grounded; // If on ground
+    private bool moved; // When to keep x-acceleration
+    private bool isWallSliding;
     private bool hasWallJumped;
+    private float xInput;
+    private float yInput;
+    private bool lmb;
+    private bool rmb;
+    private Collider2D[] grabbedEnemies;
+    private Collider2D[] grabbedGround;
+    
+    // Internal Components
+    private Rigidbody2D body;
+    private SpriteRenderer spriteRenderer;
+    private DistanceJoint2D ropeJoint;
 
-    // Update is called once per frame
     private void Start() {
+        body = GetComponent<Rigidbody2D>();
         spriteRenderer = GetComponent<SpriteRenderer>();
+        ropeJoint = GetComponent<DistanceJoint2D>();
+
+        grabbedGround = Physics2D.OverlapAreaAll(circleCollider.bounds.min, circleCollider.bounds.max, groundMask);
+        grabbedEnemies = Physics2D.OverlapAreaAll(circleCollider.bounds.min, circleCollider.bounds.max, enemyMask);
+
         ropeJoint.enabled = false;
     }
     private void Update()
     {
+        CheckYoYoCollision();
         CheckInput();
         HandleJump();
         HandleSprite();
+        HandlePlayerRotation();
     }
 
     private void FixedUpdate() {
         CheckGround();
         HandleXMovement();
         ApplyFriction();
-        Pull();
+        HandleSwing();
+        HandleFasterFalling();
+        HandleEnemyGrab();
         HandleWallSlide();
-        Swing();
-        
     }
 
     private void CheckInput() {
@@ -69,13 +85,20 @@ public class PlayerMovement : MonoBehaviour
         }
         
         yInput = Input.GetAxis("Vertical");
+        lmb = Input.GetMouseButton(0);
+        rmb = Input.GetMouseButton(1);
+    }
+    
+    private void CheckYoYoCollision() {
+        grabbedGround = Physics2D.OverlapAreaAll(circleCollider.bounds.min, circleCollider.bounds.max, groundMask);
+        grabbedEnemies = Physics2D.OverlapAreaAll(circleCollider.bounds.min, circleCollider.bounds.max, enemyMask);
     }
 
     private void HandleXMovement(){
         if(grounded) {
             moved = true;
             if(Input.GetKey(KeyCode.LeftShift)) {
-               body.velocity = new Vector2(xInput * maxGroundSpeed * 2f, body.velocity.y); 
+               body.velocity = new Vector2(xInput * sprintingSpeed, body.velocity.y); 
             } else {
                 body.velocity = new Vector2(xInput * maxGroundSpeed, body.velocity.y); 
             }
@@ -84,7 +107,7 @@ public class PlayerMovement : MonoBehaviour
         } else {
             body.AddForce(transform.right * xInput * airSpeed);
         }
-        if(Input.GetMouseButton(0))
+        if(rmb && grabbedGround.Length > 0)
         {
             moved = false;
         }
@@ -102,9 +125,13 @@ public class PlayerMovement : MonoBehaviour
             moved = false;
             hasWallJumped = true;
         }
+        
+    }
+
+    private void HandleFasterFalling() {
         if(yInput < 0 && !grounded)
         {
-            body.AddForce(transform.up*yInput * fallAcceleration);
+            body.AddForce(Vector2.up*yInput * fallAcceleration);
         }
     }
 
@@ -113,42 +140,49 @@ public class PlayerMovement : MonoBehaviour
     }
 
     private void ApplyFriction() {
-        if(grounded && xInput == 0 && yInput == 0 && !Input.GetMouseButton(0)) {
+        if(grounded && xInput == 0 && yInput == 0 && !rmb) {
             body.velocity *= groundDecay;
             body.velocity = new Vector2(body.velocity.x * groundDecay, body.velocity.y);
         }
     }
 
-    private void Pull()
+    private void HandleSwing()
     {
-        Vector2 direction = new Vector2(0,0);
-        Vector2 newvector = new Vector2(0,0);
-        if (Input.GetMouseButton(0) && Physics2D.OverlapAreaAll(circleCollider.bounds.min, circleCollider.bounds.max, groundMask).Length > 0)
+        if (rmb && grabbedGround.Length > 0)
         {
-            direction = grappler.transform.position - transform.position;
-            newvector = direction.normalized * swingAcceleration;
-            body.AddForce(newvector);
+            Vector2 direction = grappler.transform.position - transform.position;
+            Vector2 newvector = direction.normalized * swingAcceleration;
             
+            anchor.transform.position = grappler.transform.position;
+            if(!ropeJoint.enabled)ropeJoint.distance = Vector2.Distance(transform.position, grappler.transform.position);
+            if(ropeJoint.distance < minRopeDistance) {
+                ropeJoint.enabled = true;
+            } else {
+                ropeJoint.enabled = false;
+                body.AddForce(newvector);
+            }
+        } else {
+            ropeJoint.enabled = false;
         }
         body.velocity = Vector2.ClampMagnitude(body.velocity, maxSwingSpeed);
     }
-    
-    private void Swing() {
 
-        if (Input.GetMouseButton(1) && Physics2D.OverlapAreaAll(circleCollider.bounds.min, circleCollider.bounds.max, groundMask).Length > 0)
+    private void HandleEnemyGrab() {
+        if (rmb && grabbedEnemies.Length > 0)
         {
-            anchor.transform.position = grappler.transform.position;
-            if(!ropeJoint.enabled)ropeJoint.distance = Vector2.Distance(transform.position, grappler.transform.position);
-            ropeJoint.enabled = true;
-           
-            
-        } else {
-            ropeJoint.enabled = false;
+            if(grounded && grabbedEnemies[0].GetComponent<Enemy>().Grounded()) { 
+                // Vector2 direction = grappler.transform.position - transform.position;
+                // Vector2 newvector = -direction.normalized * swingAcceleration;
+                // grabbedEnemies[0].GetComponent<Rigidbody2D>().AddForce(newvector);
+            }
+            // Vector2 direction = grappler.transform.position - transform.position;
+            // Vector2 newvector = direction.normalized * swingAcceleration;
+            // body.AddForce(newvector);
         }
     }
 
     private void HandleWallSlide() {
-        if(Physics2D.OverlapAreaAll(wallCheck.bounds.min, wallCheck.bounds.max, groundMask).Length > 0 && !grounded && xInput != 0f) {
+        if(grabbedGround.Length > 0 && !grounded && xInput != 0f) {
             body.velocity = new Vector2(body.velocity.x, Mathf.Clamp(body.velocity.y, -wallSlidingSpeed, float.MaxValue));
             isWallSliding = true;
         } else {
@@ -157,7 +191,7 @@ public class PlayerMovement : MonoBehaviour
     }
     private void HandleSprite()
     {
-        if (Input.GetMouseButton(0))
+        if (rmb && grabbedGround.Length > 0)
         {
             spriteRenderer.sprite = spriteArray[1];
         } else if (grounded)
@@ -170,7 +204,10 @@ public class PlayerMovement : MonoBehaviour
         {
             spriteRenderer.sprite = spriteArray[3];
         }
-        if(Input.GetMouseButton(0) || Input.GetMouseButton(1))
+    }
+
+    private void HandlePlayerRotation() {
+        if(rmb && grabbedGround.Length > 0)
         {
             Vector3 diff = grappler.transform.position - transform.position;
             diff.Normalize();

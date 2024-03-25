@@ -14,14 +14,15 @@ public class Line : MonoBehaviour
     private void Start()
     {
         line = GetComponent<LineRenderer>();
-        line.SetColors(lineColor,lineColor);
+        line.startColor = lineColor;
+        line.endColor = lineColor;
     }
 
     // Update is called once per frame
     private void Update()
     {
 
-        if (Input.GetMouseButton(0) || Input.GetMouseButton(1))
+        if (Input.GetMouseButton(1))
         {
             line.enabled = true;
             line.SetPosition(0, player.transform.position);

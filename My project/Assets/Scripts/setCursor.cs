@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class setCursor : MonoBehaviour
+public class SetCursor : MonoBehaviour
 {
     // You must set the cursor in the inspector.
     [SerializeField] private Texture2D crosshair;
