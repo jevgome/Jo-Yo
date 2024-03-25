@@ -253,8 +253,11 @@ MonoBehaviour:
   groundMask:
     serializedVersion: 2
     m_Bits: 128
-  yoyo: {fileID: 1579618362987577726, guid: e643084902d547d4e86655c613f03f99, type: 3}
   player: {fileID: 2983801517471829229, guid: cf40fdcc59d0a4442aa3f366942a3ebe, type: 3}
-  pullAcceleration: 80
   grabbed: 0
   groundDecay: 0.8
+  yoyoLayer:
+    serializedVersion: 2
+    m_Bits: 1024
+  touching: 0
+  minDistance: 2

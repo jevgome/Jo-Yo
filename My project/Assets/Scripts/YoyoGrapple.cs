@@ -10,7 +10,8 @@ public class YoyoGrapple : MonoBehaviour
     private SpriteRenderer spriteRenderer;
     private Rigidbody2D body;
     private CircleCollider2D collider;
-    [SerializeField] private float speed;
+    [SerializeField] private float throwSpeed;
+    [SerializeField] private float returnSpeed;
     private bool grappling = false;
     [SerializeField] private bool grounded;
     [SerializeField] private bool enemied;
@@ -37,6 +38,7 @@ public class YoyoGrapple : MonoBehaviour
     private void FixedUpdate()
     {
         CheckCollision();
+        CheckGrabbed();
     }
 
     private void CheckMousePosition() {
@@ -44,31 +46,50 @@ public class YoyoGrapple : MonoBehaviour
         mouseposition.z = Camera.main.nearClipPlane;
         mouseposition = Camera.main.ScreenToWorldPoint(mouseposition);
     }
-
-    private void CheckCollision() {
+    private void CheckGrabbed() {
         Collider2D[] grabbedEnemies = Physics2D.OverlapAreaAll(collider.bounds.min, collider.bounds.max, enemyMask);
         grounded = Physics2D.OverlapAreaAll(collider.bounds.min, collider.bounds.max, groundMask).Length > 0;
-        enemied = grabbedEnemies.Length > 0;
+        // enemied = grabbedEnemies.Length > 0;
+        if(grabbedEnemies.Length > 0 && rmb) {
+            enemied= true;
+        } else if(!rmb) {
+            enemied = false;
+        }
+    }
+
+    private void CheckCollision() {
+        
         Vector2 direction = new Vector2(0,0);
         Vector2 newvector = new Vector2(0,0);
         if(rmb) {
             spriteRenderer.enabled = true;
             if(!grappling) {
                 direction = mouseposition - transform.position;
-                newvector = direction.normalized * speed;
+                newvector = direction.normalized * throwSpeed;
+                grappling = true;
             }
-            grappling = true;
-            if(!grounded && !enemied) {
-                body.AddForce(newvector);
-            } else {
-                if(enemied) {
-                    transform.position = grabbedEnemies[0].GetComponent<Transform>().position + grabbedEnemies[0].GetComponent<Transform>().InverseTransformPoint(transform.position);
+                
+            if(enemied){
+                if(Vector2.Distance(player.transform.position, transform.position) > 2) {
+                    direction = player.transform.position - transform.position;
+                    newvector = direction.normalized * returnSpeed;
+                    body.AddForce(newvector);
+                } else {
+                    spriteRenderer.enabled = false;
+                    transform.position = player.transform.position;
+                    grappling = false;
+                    enemied = false;
                 }
+                
+            } else if(grounded) {
                 body.velocity = Vector2.zero;
+            } else {
+                body.AddForce(newvector);
             }
         } else {
             spriteRenderer.enabled = false;
             transform.position = player.transform.position;
+            body.velocity = Vector2.zero;
             grappling = false;
         }
     }

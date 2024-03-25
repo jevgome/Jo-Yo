@@ -22,7 +22,7 @@ public class Line : MonoBehaviour
     private void Update()
     {
 
-        if (Input.GetMouseButton(1))
+        if (yoyo.GetComponent<SpriteRenderer>().enabled)
         {
             line.enabled = true;
             line.SetPosition(0, player.transform.position);

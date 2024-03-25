@@ -155,7 +155,7 @@ public class PlayerMovement : MonoBehaviour
             
             anchor.transform.position = grappler.transform.position;
             if(!ropeJoint.enabled)ropeJoint.distance = Vector2.Distance(transform.position, grappler.transform.position);
-            if(ropeJoint.distance < minRopeDistance) {
+            if(ropeJoint.distance < minRopeDistance && xInput == 0 && yInput == 0) {
                 ropeJoint.enabled = true;
             } else {
                 ropeJoint.enabled = false;

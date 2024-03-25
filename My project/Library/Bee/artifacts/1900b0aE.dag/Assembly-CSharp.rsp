@@ -377,7 +377,7 @@
 "Assets/Scripts/Level1.cs"
 "Assets/Scripts/Line.cs"
 "Assets/Scripts/PlayerMovement.cs"
-"Assets/Scripts/SetCursor.cs"
+"Assets/Scripts/setCursor.cs"
 "Assets/Scripts/YoyoGrapple.cs"
 -langversion:9.0
 

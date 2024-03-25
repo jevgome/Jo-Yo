@@ -168,6 +168,7 @@ MonoBehaviour:
   enemyMask:
     serializedVersion: 2
     m_Bits: 512
-  speed: 5000
+  throwSpeed: 5000
+  returnSpeed: 500
   grounded: 0
   enemied: 0

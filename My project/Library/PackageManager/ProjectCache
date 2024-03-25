@@ -5,16 +5,16 @@ m_ProjectFiles:
     m_ContentTrackingEnabled: 1
     m_ModificationDate:
       serializedVersion: 2
-      ticks: 638465777312188393
-    m_Hash: 1039556359
+      ticks: 638466216440073055
+    m_Hash: 2697702737
   m_LockFileStatus:
     m_FilePath: C:/Users/jevgo/GitHub/Jo-Yo/My project/Packages/packages-lock.json
     m_PathExists: 1
     m_ContentTrackingEnabled: 1
     m_ModificationDate:
       serializedVersion: 2
-      ticks: 638465777312188393
-    m_Hash: 1261736686
+      ticks: 638466216440106052
+    m_Hash: 4073385370
 m_EmbeddedPackageManifests:
   m_ManifestsStatus: {}
 m_LocalPackages:
