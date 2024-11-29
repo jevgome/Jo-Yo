@@ -69,11 +69,13 @@ public class Enemy : MonoBehaviour
 
     }
     private void CheckCollision() {
-        if(Physics2D.OverlapAreaAll(collider.bounds.min, collider.bounds.max, yoyoLayer).Length > 0 && rmb) {
-            grabbed = true;
-        } else if(!rmb) {
-            grabbed = false;
-        }
+        // if(Physics2D.OverlapAreaAll(collider.bounds.min, collider.bounds.max, yoyoLayer).Length > 0 && rmb) {
+        //     grabbed = true;
+        // } else if(!rmb) {
+        //     grabbed = false;
+        // }
+
+        grabbed = Physics2D.OverlapAreaAll(collider.bounds.min, collider.bounds.max, yoyoLayer).Length > 0 && rmb;
     }
 
     private void ApplyFriction() {
