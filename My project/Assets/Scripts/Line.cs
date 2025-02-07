@@ -5,13 +5,13 @@ using UnityEngine;
 public class Line : MonoBehaviour
 {
 
-    private LineRenderer line;
-    [SerializeField] private GameObject player;
-    [SerializeField] private GameObject yoyo;
+    public LineRenderer line;
+    [SerializeField] public GameObject player;
+    [SerializeField] public GameObject yoyo;
 
-    private Color lineColor = new Color(255, 255, 255, 1);
+    public Color lineColor = new Color(255, 255, 255, 1);
     // Start is called before the first frame update
-    private void Start()
+    public void Start()
     {
         line = GetComponent<LineRenderer>();
         line.startColor = lineColor;
@@ -19,7 +19,7 @@ public class Line : MonoBehaviour
     }
 
     // Update is called once per frame
-    private void Update()
+    public void Update()
     {
 
         if (yoyo.GetComponent<SpriteRenderer>().enabled)

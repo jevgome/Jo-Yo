@@ -16,6 +16,26 @@ PrefabInstance:
       propertyPath: m_WasSpriteAssigned
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 1891921319387772330, guid: 0223f10d4c0a7b744b88548d1e038ef7, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -0.014
+      objectReference: {fileID: 0}
+    - target: {fileID: 1891921319387772330, guid: 0223f10d4c0a7b744b88548d1e038ef7, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0.042
+      objectReference: {fileID: 0}
+    - target: {fileID: 2404181283797091787, guid: 0223f10d4c0a7b744b88548d1e038ef7, type: 3}
+      propertyPath: m_Size.x
+      value: 0.84
+      objectReference: {fileID: 0}
+    - target: {fileID: 2404181283797091787, guid: 0223f10d4c0a7b744b88548d1e038ef7, type: 3}
+      propertyPath: m_Size.y
+      value: 0.44
+      objectReference: {fileID: 0}
+    - target: {fileID: 2404181283797091787, guid: 0223f10d4c0a7b744b88548d1e038ef7, type: 3}
+      propertyPath: m_Offset.x
+      value: -0.01
+      objectReference: {fileID: 0}
     - target: {fileID: 2886413019804547616, guid: 0223f10d4c0a7b744b88548d1e038ef7, type: 3}
       propertyPath: m_Size.x
       value: 0.21414375
@@ -32,6 +52,10 @@ PrefabInstance:
       propertyPath: m_Offset.y
       value: -0.27429828
       objectReference: {fileID: 0}
+    - target: {fileID: 3391491709252610362, guid: 0223f10d4c0a7b744b88548d1e038ef7, type: 3}
+      propertyPath: m_Layer
+      value: 9
+      objectReference: {fileID: 0}
     - target: {fileID: 4909702619935788529, guid: 0223f10d4c0a7b744b88548d1e038ef7, type: 3}
       propertyPath: m_LocalScale.x
       value: 2.95
@@ -46,7 +70,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4909702619935788529, guid: 0223f10d4c0a7b744b88548d1e038ef7, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0
+      value: 0.011
       objectReference: {fileID: 0}
     - target: {fileID: 4909702619935788529, guid: 0223f10d4c0a7b744b88548d1e038ef7, type: 3}
       propertyPath: m_LocalPosition.y
@@ -88,9 +112,33 @@ PrefabInstance:
       propertyPath: m_ConstrainProportionsScale
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 5495454282171284798, guid: 0223f10d4c0a7b744b88548d1e038ef7, type: 3}
+      propertyPath: m_Mass
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5495454282171284798, guid: 0223f10d4c0a7b744b88548d1e038ef7, type: 3}
+      propertyPath: m_BodyType
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5495454282171284798, guid: 0223f10d4c0a7b744b88548d1e038ef7, type: 3}
+      propertyPath: m_Material
+      value: 
+      objectReference: {fileID: 6200000, guid: 07478a737ee292c41afc6452ae5c7e8d, type: 2}
+    - target: {fileID: 5495454282171284798, guid: 0223f10d4c0a7b744b88548d1e038ef7, type: 3}
+      propertyPath: m_GravityScale
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 5495454282171284798, guid: 0223f10d4c0a7b744b88548d1e038ef7, type: 3}
+      propertyPath: m_ExcludeLayers.m_Bits
+      value: 1024
+      objectReference: {fileID: 0}
     - target: {fileID: 5967478136062566336, guid: 0223f10d4c0a7b744b88548d1e038ef7, type: 3}
       propertyPath: m_Name
       value: Dummy
+      objectReference: {fileID: 0}
+    - target: {fileID: 5967478136062566336, guid: 0223f10d4c0a7b744b88548d1e038ef7, type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8018194657884519477, guid: 0223f10d4c0a7b744b88548d1e038ef7, type: 3}
       propertyPath: m_Size.x
@@ -135,6 +183,10 @@ PrefabInstance:
     - target: {fileID: 8018194657884519477, guid: 0223f10d4c0a7b744b88548d1e038ef7, type: 3}
       propertyPath: m_SpriteTilingProperty.adaptiveTilingThreshold
       value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 9056186452924646789, guid: 0223f10d4c0a7b744b88548d1e038ef7, type: 3}
+      propertyPath: gravity
+      value: 3
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

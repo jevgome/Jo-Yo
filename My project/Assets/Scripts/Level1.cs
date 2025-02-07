@@ -5,7 +5,7 @@ using UnityEngine.SceneManagement;
 
 public class Level1 : MonoBehaviour
 {
-    [SerializeField] private GameObject dummy;
+    [SerializeField] public GameObject dummy;
     // Start is called before the first frame update
     void Start()
     {
@@ -20,7 +20,7 @@ public class Level1 : MonoBehaviour
         }
     }
 
-    private void ResetScene() {
+    public void ResetScene() {
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
 }

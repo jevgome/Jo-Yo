@@ -38,7 +38,6 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0, g: 0, b: 0, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -1337,13 +1336,25 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3073203173545895205, guid: e643084902d547d4e86655c613f03f99, type: 3}
+      propertyPath: m_IsTrigger
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 4826330272141767051, guid: e643084902d547d4e86655c613f03f99, type: 3}
       propertyPath: player
       value: 
       objectReference: {fileID: 34396351}
     - target: {fileID: 4826330272141767051, guid: e643084902d547d4e86655c613f03f99, type: 3}
       propertyPath: throwSpeed
-      value: 2500
+      value: 40
+      objectReference: {fileID: 0}
+    - target: {fileID: 4826330272141767051, guid: e643084902d547d4e86655c613f03f99, type: 3}
+      propertyPath: returnSpeed
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 5327296801530195677, guid: e643084902d547d4e86655c613f03f99, type: 3}
+      propertyPath: m_BodyType
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
