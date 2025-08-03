@@ -15,7 +15,6 @@ public class YoyoGrapple : MonoBehaviour
     public bool grappling = false;
     [SerializeField] public bool grounded;
     [SerializeField] public bool enemied;
-    public bool thrown;
     public bool lmb;
     public bool rmb;
     public Vector3 mouseposition;
@@ -51,56 +50,35 @@ public class YoyoGrapple : MonoBehaviour
     public void CheckGrabbed() {
         grabbedEnemies = Physics2D.OverlapAreaAll(col.bounds.min, col.bounds.max, enemyMask);
         grounded = Physics2D.OverlapAreaAll(col.bounds.min, col.bounds.max, groundMask).Length > 0;
-        enemied = grabbedEnemies.Length > 0 && rmb;
+        enemied = grabbedEnemies.Length > 0 && (lmb || rmb);
     }
 
     public void CheckCollision() {
-        
-        Vector2 direction = new Vector2(0,0);
-        Vector2 newvector = new Vector2(0,0);
-        if(rmb && (transform.position != player.transform.position || !thrown) ) {
+        if((lmb || rmb) && (transform.position != player.transform.position || !grappling) ) {
             spriteRenderer.enabled = true;
             if(!grappling) {
-                direction = mouseposition - transform.position;
-                newvector = direction.normalized * throwSpeed;
+                Vector2 direction = mouseposition - transform.position;
+                direction = direction.normalized;
+                Vector2 dir2 = direction;
+                Vector2 pos = new Vector2(player.transform.position.x + dir2.x, player.transform.position.y + dir2.y);
+                RaycastHit2D hit = Physics2D.Raycast(pos, direction);
+                if(hit) {
+                    transform.position = hit.point;
+                }
                 grappling = true;
             }
 
-            if(Vector2.Distance(player.transform.position, transform.position) > 2) {
-                thrown = true;
-            }
-                
             if(enemied){
-                // if(Vector2.Distance(player.transform.position, transform.position) > 2) {
-                //     direction = player.transform.position - transform.position;
-                //     newvector = direction.normalized * returnSpeed;
-                //     body.velocity = newvector;
-                // } else {
-                //     spriteRenderer.enabled = false;
-                //     transform.position = player.transform.position;
-                //     body.velocity = Vector2.zero;
-                //     thrown = false;
-                // }
-                body.velocity = Vector2.zero;
                 transform.position = grabbedEnemies[0].GetComponent<Transform>().position;
-                
+                if(lmb)body.velocity = grabbedEnemies[0].GetComponent<Rigidbody2D>().velocity;
             } else if(grounded) {
                 body.velocity = Vector2.zero;
-            } else {
-                body.velocity += newvector;
             }
         } else {
             spriteRenderer.enabled = false;
             transform.position = player.transform.position;
             body.velocity = Vector2.zero;
             grappling = false;
-            thrown = false;
         }
     }
-    // void OnTriggerStay (Collider other)
-    // {
-    //     body.velocity = Vector2.zero;
-    //     other.GetComponent<Rigidbody>().velocity = Vector2.zero;
-    // }
-
 }

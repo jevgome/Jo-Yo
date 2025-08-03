@@ -185,8 +185,16 @@ PrefabInstance:
       value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 9056186452924646789, guid: 0223f10d4c0a7b744b88548d1e038ef7, type: 3}
+      propertyPath: flail
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 9056186452924646789, guid: 0223f10d4c0a7b744b88548d1e038ef7, type: 3}
       propertyPath: gravity
       value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 9056186452924646789, guid: 0223f10d4c0a7b744b88548d1e038ef7, type: 3}
+      propertyPath: maxPull
+      value: 100
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

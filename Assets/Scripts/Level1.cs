@@ -21,6 +21,6 @@ public class Level1 : MonoBehaviour
     }
 
     public void ResetScene() {
-        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+        SceneManager.LoadScene("Level 1");
     }
 }

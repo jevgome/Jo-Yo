@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class PlayerMovement : MonoBehaviour
@@ -14,7 +15,7 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] public CircleCollider2D circleCollider;
     [SerializeField] public Sprite[] spriteArray;
     [SerializeField] public Rigidbody2D anchor;
-
+ 
     // Physics stuff
     
     [Range(0f,1f)] [SerializeField] public float groundDecay; // Friction coefficient
@@ -46,7 +47,10 @@ public class PlayerMovement : MonoBehaviour
     public SpriteRenderer spriteRenderer;
     public DistanceJoint2D ropeJoint;
 
-    public void Start() {
+    public float vel;
+
+    public void Start()
+    {
         body = GetComponent<Rigidbody2D>();
         spriteRenderer = GetComponent<SpriteRenderer>();
         ropeJoint = GetComponent<DistanceJoint2D>();
@@ -66,13 +70,14 @@ public class PlayerMovement : MonoBehaviour
     }
 
     public void FixedUpdate() {
+        HandleSwing();
         CheckGround();
         HandleXMovement();
         ApplyFriction();
-        HandleSwing();
         HandleFasterFalling();
         HandleEnemyGrab();
         HandleWallSlide();
+        vel = body.velocity.magnitude;
     }
 
     public void CheckInput() {
@@ -148,8 +153,7 @@ public class PlayerMovement : MonoBehaviour
 
     public void HandleSwing()
     {
-        if (rmb && grabbedGround.Length > 0)
-        {
+        if (rmb && grabbedGround.Length > 0) {
             Vector2 direction = grappler.transform.position - transform.position;
             Vector2 newvector = direction.normalized * swingAcceleration;
             
@@ -164,7 +168,7 @@ public class PlayerMovement : MonoBehaviour
         } else {
             ropeJoint.enabled = false;
         }
-        body.velocity = Vector2.ClampMagnitude(body.velocity, maxSwingSpeed);
+        // body.velocity = Vector2.ClampMagnitude(body.velocity, maxSwingSpeed);
     }
 
     public void HandleEnemyGrab() {

@@ -24,7 +24,9 @@ public class Enemy : MonoBehaviour
     public Vector2 pos;
     [SerializeField] public float gravity;
     [SerializeField] public float maxPull;
-
+    public float flail;
+    public bool lmb, rmb;
+    public Vector3 mouseposition;
 
     // Start is called before the first frame update
     void Start()
@@ -41,32 +43,56 @@ public class Enemy : MonoBehaviour
     }
 
     void FixedUpdate() {
+        lmb = Input.GetMouseButton(0);
+        rmb = Input.GetMouseButton(1);
+        CheckMousePosition();
         CheckGrabbed();
         ApplyFriction();
         vel = body.velocity;
     }
 
+    public void CheckMousePosition() {
+        mouseposition = Input.mousePosition;
+        mouseposition.z = Camera.main.nearClipPlane;
+        mouseposition = Camera.main.ScreenToWorldPoint(mouseposition);
+    }
     public void CheckGrabbed() {
         Collider2D[] yoyoCol = Physics2D.OverlapAreaAll(col.bounds.min, col.bounds.max, yoyoLayer);
         if(yoyoCol.Length > 0) {
             pos = player.transform.position;
-            Vector2 direction = player.transform.position - transform.position;
-            Vector2 newvector = direction.normalized;
-            
-            if(grabbed) {
-                if(body.velocity.magnitude < maxPull) {
-                    body.velocity += newvector;
-                }
+            if (lmb)
+            {
+                Vector2 direction = mouseposition - transform.position;
+                Vector2 newvector = direction.normalized * flail;
                 
-            } else {
-                body.velocity = newvector;
+                if(grabbed) {
+                    if(body.velocity.magnitude < maxPull) {
+                        body.velocity += newvector;
+                    }
+                    
+                } else {
+                    body.velocity = newvector;
+                }
+            }
+            else
+            {
+                Vector2 direction = player.transform.position - transform.position;
+                Vector2 newvector = direction.normalized;
+                
+                if(grabbed) {
+                    if(body.velocity.magnitude < maxPull) {
+                        body.velocity += newvector;
+                    }
+                    
+                } else {
+                    body.velocity = newvector;
+                }
             }
             
             grabbed = true;
             body.gravityScale = 0;
         } else {
             grabbed = false;
-            // body.velocity = Vector2.zero;
             body.gravityScale = gravity;
         }
     }
